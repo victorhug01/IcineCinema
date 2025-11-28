@@ -45,10 +45,8 @@ abstract class Produto
         $this->preco = $preco;
     }
 
-    // Abstração: descreve o produto
     abstract public function descricao(): string;
 
-    // Polimorfismo: subclasses podem alterar o cálculo final do preço
     public function calcularPreco(): float
     {
         return $this->preco;

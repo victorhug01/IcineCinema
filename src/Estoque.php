@@ -6,7 +6,6 @@ namespace Icine\Sistema;
 
 class Estoque
 {
-    /** @var ItemEstoque[] keyed by codigo */
     private array $itens = [];
 
     public function cadastrarProduto(Produto $produto, int $quantidade = 0): void
@@ -22,7 +21,6 @@ class Estoque
         if (isset($dados['nome'])) $produto->setNome((string) $dados['nome']);
         if (isset($dados['preco'])) $produto->setPreco((float) $dados['preco']);
         if (isset($dados['quantidade'])) $item->setQuantidade((int) $dados['quantidade']);
-        // For specific fields (tipo, volume, alcoolica) caller can cast and set via specific methods
         return true;
     }
 

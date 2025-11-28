@@ -6,7 +6,7 @@ namespace Icine\Sistema;
 
 class Bebida extends Produto
 {
-    private float $volume; // in mL
+    private float $volume;
     private bool $alcoolica;
 
     public function __construct(string $codigo, string $nome, float $preco, float $volume = 0.0, bool $alcoolica = false)
@@ -32,12 +32,11 @@ class Bebida extends Produto
         return sprintf("Bebida: %s (%.0fml, %s)", $this->getNome(), $this->volume, $alc);
     }
 
-    // Exemplo de polimorfismo: bebidas alcoólicas possuem um acréscimo
     public function calcularPreco(): float
     {
         $preco = parent::calcularPreco();
         if ($this->alcoolica) {
-            $preco = round($preco * 1.10, 2); // +10% para bebidas alcoólicas
+            $preco = round($preco * 1.10, 2);
         }
         return $preco;
     }

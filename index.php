@@ -53,7 +53,6 @@ echo "Sessão criada: {$filme->getTitulo()} na sala {$sala->getNumero()} às " .
 
 $bilheteria = new Bilheteria();
 
-// Bomboniere: estoque e controlador
 $estoque = new Estoque();
 $bomboniere = new Bomboniere($estoque);
 
@@ -78,7 +77,6 @@ while (true) {
         $disponiveis = $sala->getCapacidade() - $ocupados;
         echo "Ocupados: {$ocupados} | Disponíveis: {$disponiveis} | Capacidade: {$sala->getCapacidade()}\n";
     } elseif ($opt === '3') {
-        // Menu da bomboniere
         while (true) {
             echo "\n-- Bomboniere --\n";
             echo "1) Cadastrar produto\n2) Editar produto\n3) Excluir produto\n4) Listar produtos\n5) Vender produto\n6) Voltar\n";
@@ -135,7 +133,7 @@ while (true) {
                     echo "Venda realizada! ID: {$venda->getId()} | Total: R$ " . number_format($venda->getTotal(), 2, ',', '.') . "\n";
                 }
             } else {
-                break; // voltar
+                break;
             }
         }
     } else {

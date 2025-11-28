@@ -28,12 +28,9 @@ class Comida extends Produto
     {
         return sprintf("Comida: %s (%s)", $this->getNome(), $this->tipo ?? 'geral');
     }
-
-    // Exemplo de polimorfismo: comidas podem ter desconto fixo
     public function calcularPreco(): float
     {
         $preco = parent::calcularPreco();
-        // desconto simbólico de 5% para comidas
         return round($preco * 0.95, 2);
     }
 }
