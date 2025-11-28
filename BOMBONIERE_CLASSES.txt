@@ -84,3 +84,50 @@ Observações finais:
 - Polimorfismo: calcularPreco() pode ser sobrescrito pelas subclasses para alterar o preço final.
 
 Arquivo gerado automaticamente pelo assistente para documentar as classes da bomboniere.
+
+Mapeamento de opções do menu (implementação em `index.php`):
+
+- Menu Bomboniere:
+  1) Cadastrar produto
+    - Fluxo: lê inputs via `rl()` (wrapper de `readline`), realiza casts (`(float)`, `(int)`) quando necessário.
+    - Instancia `Comida` ou `Bebida` conforme escolha e chama `Bomboniere::cadastrarProduto($produto, $quantidade)`.
+    - Internamente: `Bomboniere::cadastrarProduto` delega para `Estoque::cadastrarProduto`, que insere um `ItemEstoque` no array associativo `$itens` indexado pelo código.
+
+  2) Editar produto
+    - Fluxo: solicita o `codigo` e campos opcionais; constrói um array `$dados` com chaves `nome`, `preco`, `quantidade` quando preenchidos.
+    - Chama `Bomboniere::editarProduto($codigo, $dados)`.
+    - Internamente: `Bomboniere::editarProduto` chama `Estoque::editarProduto($codigo, $dados)`, que busca o `ItemEstoque` no array e aplica setters no `Produto` e/ou quantidade no `ItemEstoque`.
+
+  3) Excluir produto
+    - Fluxo: solicita o `codigo` e chama `Bomboniere::excluirProduto($codigo)`.
+    - Internamente: `Bomboniere::excluirProduto` chama `Estoque::removerProduto($codigo)`, que utiliza `unset($this->itens[$codigo])` para remover do array.
+
+  4) Listar produtos
+    - Fluxo: chama `Bomboniere::listarProdutos()`.
+    - Internamente: `Bomboniere::listarProdutos` delega para `Estoque::listarProdutos()`, que retorna `array_values($this->itens)` (array de `ItemEstoque`).
+
+  5) Vender produto
+    - Fluxo: solicita `codigo` e `quantidade` (com cast para `int`) e chama `Bomboniere::vender($codigo, $quantidade)`.
+    - Internamente: `Bomboniere::vender` obtém o `ItemEstoque` via `Estoque::obterProduto`, verifica quantidade, chama `ItemEstoque::reduzir($quantidade)` para decrementar o estoque e, se bem-sucedido, cria um objeto `Venda` e o registra no array privado `$vendas` da `Bomboniere`.
+
+  6) Voltar
+    - Fluxo: retorna ao menu principal (não envolve operações de bomboniere).
+
+Observações técnicas sobre a implementação CLI:
+- A função `rl(string $prompt): string` em `index.php` encapsula `readline()` e normaliza a entrada (retornando string vazia quando `readline` retorna `false`).
+- Em vários pontos são usados type castings explícitos vindos de `readline`, por exemplo `(int) rl(...)` e `(float) rl(...)`, satisfazendo o requisito de uso de casts.
+- Arrays: o `Estoque` usa um array associativo (`private array $itens`) para armazenar `ItemEstoque`, e `Bomboniere` mantém um array de vendas (`private array $vendas`).
+
+Checklist de requisitos (status atual):
+- PHP: atendido (código em PHP, `declare(strict_types=1)` presente).
+- Composer: atendido (`composer.json` presente e `vendor/autoload.php` utilizado em `index.php`).
+- POO (abstração, herança, encapsulamento, polimorfismo): atendido (ex.: `Produto` é abstrata, `Comida`/`Bebida` estendem, propriedades privadas + getters/setters, `calcularPreco()` polimórfico).
+- CLI com `readline`: atendido (função `rl` em `index.php`).
+- Type castings para entrada: atendido (vários casts `(int)`, `(float)` no `index.php`).
+- Opções para cadastrar/editar/excluir objetos: atendido (menu da Bomboniere em `index.php` chama métodos correspondentes).
+- Uso de arrays: atendido (`Estoque::$itens`, `Bomboniere::$vendas`, uso de arrays para dados de edição etc.).
+- Mínimo de 7 classes: atendido (há 14 arquivos de classe em `src/`).
+
+Sugestões (opcionais):
+- Documentar no `README.md` os comandos para executar o CLI: por exemplo, `php index.php` e requisitos (PHP versão mínima, Composer autoload já gerado).
+- Adicionar validações/tratamento de erros nos inputs (ex.: valores negativos, código duplicado) caso queira fortalecer robustez.
