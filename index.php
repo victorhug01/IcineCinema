@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -11,6 +12,10 @@ use Icine\Sistema\Filme;
 use Icine\Sistema\Sessao;
 use Icine\Sistema\Pessoa;
 use Icine\Sistema\Bilheteria;
+use Icine\Sistema\Estoque;
+use Icine\Sistema\Bomboniere;
+use Icine\Sistema\Comida;
+use Icine\Sistema\Bebida;
 
 function rl(string $prompt): string
 {
@@ -48,9 +53,13 @@ echo "Sessão criada: {$filme->getTitulo()} na sala {$sala->getNumero()} às " .
 
 $bilheteria = new Bilheteria();
 
+// Bomboniere: estoque e controlador
+$estoque = new Estoque();
+$bomboniere = new Bomboniere($estoque);
+
 while (true) {
     echo "\n---- Menu ----\n";
-    echo "1) Vender ingresso\n2) Mostrar ocupação\n3) Sair\n";
+    echo "1) Vender ingresso\n2) Mostrar ocupação\n3) Bomboniere\n4) Sair\n";
     $opt = rl("Escolha: ");
     if ($opt === '1') {
         $nome = rl("Nome do comprador: ");
@@ -68,6 +77,67 @@ while (true) {
         $ocupados = count($sessao->getIngressos());
         $disponiveis = $sala->getCapacidade() - $ocupados;
         echo "Ocupados: {$ocupados} | Disponíveis: {$disponiveis} | Capacidade: {$sala->getCapacidade()}\n";
+    } elseif ($opt === '3') {
+        // Menu da bomboniere
+        while (true) {
+            echo "\n-- Bomboniere --\n";
+            echo "1) Cadastrar produto\n2) Editar produto\n3) Excluir produto\n4) Listar produtos\n5) Vender produto\n6) Voltar\n";
+            $bopt = rl("Escolha: ");
+            if ($bopt === '1') {
+                $tipo = rl("Tipo (C=comida / B=bebida): ");
+                $codigo = rl("Código do produto: ");
+                $nomeP = rl("Nome: ");
+                $preco = (float) rl("Preço (ex: 5.50): ");
+                $quant = (int) rl("Quantidade inicial: ");
+                if (strtoupper($tipo) === 'C') {
+                    $t = rl("Tipo de comida (ex: salgado/doce) [opcional]: ");
+                    $prod = new Comida($codigo ?: uniqid('prd_'), $nomeP ?: 'Comida', $preco ?: 0.0, $t ?: null);
+                } else {
+                    $vol = (float) rl("Volume (ml) [ex: 350]: ");
+                    $alc = rl("É alcoólica? (s/n): ");
+                    $prod = new Bebida($codigo ?: uniqid('prd_'), $nomeP ?: 'Bebida', $preco ?: 0.0, $vol ?: 0.0, strtolower($alc) === 's');
+                }
+                $bomboniere->cadastrarProduto($prod, $quant ?: 0);
+                echo "Produto cadastrado com sucesso.\n";
+            } elseif ($bopt === '2') {
+                $codigo = rl("Código do produto para editar: ");
+                $nomeP = rl("Novo nome (deixe vazio para manter): ");
+                $precoStr = rl("Novo preço (deixe vazio para manter): ");
+                $quantStr = rl("Nova quantidade (deixe vazio para manter): ");
+                $dados = [];
+                if ($nomeP !== '') $dados['nome'] = $nomeP;
+                if ($precoStr !== '') $dados['preco'] = (float) $precoStr;
+                if ($quantStr !== '') $dados['quantidade'] = (int) $quantStr;
+                $ok = $bomboniere->editarProduto($codigo, $dados);
+                echo $ok ? "Produto atualizado.\n" : "Produto não encontrado.\n";
+            } elseif ($bopt === '3') {
+                $codigo = rl("Código do produto para excluir: ");
+                $ok = $bomboniere->excluirProduto($codigo);
+                echo $ok ? "Produto excluído.\n" : "Produto não encontrado.\n";
+            } elseif ($bopt === '4') {
+                $itens = $bomboniere->listarProdutos();
+                if (empty($itens)) {
+                    echo "Nenhum produto cadastrado.\n";
+                } else {
+                    foreach ($itens as $item) {
+                        $p = $item->getProduto();
+                        $q = $item->getQuantidade();
+                        echo "[{$p->getCodigo()}] {$p->descricao()} | Preço: R$ " . number_format($p->calcularPreco(), 2, ',', '.') . " | Qtde: {$q}\n";
+                    }
+                }
+            } elseif ($bopt === '5') {
+                $codigo = rl("Código do produto para vender: ");
+                $qtd = (int) rl("Quantidade: ");
+                $venda = $bomboniere->vender($codigo, $qtd ?: 1);
+                if ($venda === null) {
+                    echo "Venda não realizada (produto não encontrado ou estoque insuficiente).\n";
+                } else {
+                    echo "Venda realizada! ID: {$venda->getId()} | Total: R$ " . number_format($venda->getTotal(), 2, ',', '.') . "\n";
+                }
+            } else {
+                break; // voltar
+            }
+        }
     } else {
         echo "Saindo...\n";
         break;
