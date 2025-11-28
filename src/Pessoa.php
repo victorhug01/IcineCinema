@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Icine\Sistema;
 
-class Pessoa
-{
+class Pessoa {
     private string $nome;
     private ?string $telefone;
 

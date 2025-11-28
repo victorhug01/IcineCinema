@@ -12,7 +12,7 @@ abstract class Produto
 
     public function __construct(string $codigo, string $nome, float $preco)
     {
-        $this->codigo = $codigo;
+        $this->setCodigo($codigo);
         $this->setNome($nome);
         $this->setPreco($preco);
     }
@@ -50,5 +50,9 @@ abstract class Produto
     public function calcularPreco(): float
     {
         return $this->preco;
+    }
+
+    private function setCodigo(string $codigo) : void {
+        $this->codigo = $codigo;
     }
 }
