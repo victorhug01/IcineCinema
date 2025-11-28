@@ -1,0 +1,9 @@
+{
+    "name": "icine/sistema",
+    "autoload": {
+        "psr-4": {
+            "Icine\\Sistema\\": "src/"
+        }
+    },
+    "require": {}
+}
