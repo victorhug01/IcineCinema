@@ -6,22 +6,16 @@ namespace Icine\Sistema;
 
 class Venda
 {
-    private string $id;
     private Produto $produto;
     private int $quantidade;
     private float $total;
     private \DateTimeImmutable $data;
 
     public function __construct(Produto $produto, int $quantidade) {
-        $this->id = uniqid('venda_');
         $this->setProduto($produto);
         $this->setQuantidade($quantidade);
         $this->setData(new \DateTimeImmutable());
         $this->setTotal(round($produto->calcularPreco() * $quantidade, 2));
-    }
-
-    public function getId(): string {
-        return $this->id;
     }
 
     public function getProduto(): Produto {

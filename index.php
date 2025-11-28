@@ -130,7 +130,7 @@ while (true) {
                 if ($venda === null) {
                     echo "Venda não realizada (produto não encontrado ou estoque insuficiente).\n";
                 } else {
-                    echo "Venda realizada! ID: {$venda->getId()} | Total: R$ " . number_format($venda->getTotal(), 2, ',', '.') . "\n";
+                    echo "Venda realizada! Total: R$ " . number_format($venda->getTotal(), 2, ',', '.') . "\n";
                 }
             } else {
                 break;

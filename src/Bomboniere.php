@@ -37,7 +37,7 @@ class Bomboniere
         $ok = $item->reduzir($quantidade);
         if (!$ok) return null;
         $v = new Venda($produto, $quantidade);
-        $this->vendas[$v->getId()] = $v;
+        $this->vendas[] = $v;
         return $v;
     }
 
